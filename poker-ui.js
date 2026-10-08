@@ -11,7 +11,26 @@
   const $ = (id) => document.getElementById(id);
   const screens = Object.fromEntries(SCREENS.map((name) => [name, $('screen-' + name)]));
 
-  const state = { players: [], votes: [], turn: 0 };
+  const STORAGE_KEY = 'poker.players';
+
+  const state = { players: loadPlayers(), votes: [], turn: 0 };
+
+  // localStorage puede no existir o fallar (modo privado, cuota): la app sigue funcionando sin él.
+  function loadPlayers() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!Array.isArray(saved)) return [];
+      return saved.filter((n) => typeof n === 'string' && n.trim()).map((n) => n.trim().slice(0, 24));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function savePlayers() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.players));
+    } catch (e) { /* sin persistencia */ }
+  }
 
   function show(name) {
     for (const key of SCREENS) screens[key].hidden = key !== name;
@@ -35,7 +54,9 @@
       remove.setAttribute('aria-label', 'Quitar a ' + name);
       remove.addEventListener('click', () => {
         state.players.splice(i, 1);
+        savePlayers();
         renderPlayers();
+        $('player-name').focus();
       });
       li.append(label, remove);
       return li;
@@ -53,6 +74,7 @@
     input.focus();
     if (!name || state.players.includes(name)) return;
     state.players.push(name);
+    savePlayers();
     renderPlayers();
   }
 
@@ -120,6 +142,22 @@
   $('deck').addEventListener('click', (event) => {
     const card = event.target.closest('[data-card]');
     if (card) castVote(card.dataset.card);
+  });
+  // Atajos: 1-9 y 0 eligen la carta por posición; las flechas mueven el foco entre cartas.
+  document.addEventListener('keydown', (event) => {
+    if (screens.vote.hidden || event.ctrlKey || event.metaKey || event.altKey) return;
+    const cards = [...$('deck').querySelectorAll('[data-card]')];
+    const digit = /^[0-9]$/.test(event.key) ? (Number(event.key) + 9) % 10 : -1;
+    if (digit >= 0 && cards[digit]) {
+      event.preventDefault();
+      castVote(cards[digit].dataset.card);
+      return;
+    }
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (!step) return;
+    event.preventDefault();
+    const at = cards.indexOf(document.activeElement);
+    cards[(at + step + cards.length) % cards.length].focus();
   });
   $('reveal-btn').addEventListener('click', reveal);
   $('new-round-btn').addEventListener('click', startRound);

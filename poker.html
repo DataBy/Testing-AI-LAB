@@ -36,18 +36,19 @@
     <section id="screen-vote" class="screen" aria-labelledby="vote-title" hidden>
       <h2 id="vote-title" aria-live="polite">Vota, <span id="voter-name"></span></h2>
       <div id="deck" class="deck" role="group" aria-label="Cartas">
-        <button type="button" class="card" data-card="0"><span>0</span></button>
-        <button type="button" class="card" data-card="1"><span>1</span></button>
-        <button type="button" class="card" data-card="2"><span>2</span></button>
-        <button type="button" class="card" data-card="3"><span>3</span></button>
-        <button type="button" class="card" data-card="5"><span>5</span></button>
-        <button type="button" class="card" data-card="8"><span>8</span></button>
-        <button type="button" class="card" data-card="13"><span>13</span></button>
-        <button type="button" class="card" data-card="21"><span>21</span></button>
-        <button type="button" class="card" data-card="?" aria-label="No sé"><span>?</span></button>
-        <button type="button" class="card" data-card="☕" aria-label="Necesito un descanso"><span>☕</span></button>
+        <button type="button" class="card" data-card="0" aria-keyshortcuts="1"><span>0</span></button>
+        <button type="button" class="card" data-card="1" aria-keyshortcuts="2"><span>1</span></button>
+        <button type="button" class="card" data-card="2" aria-keyshortcuts="3"><span>2</span></button>
+        <button type="button" class="card" data-card="3" aria-keyshortcuts="4"><span>3</span></button>
+        <button type="button" class="card" data-card="5" aria-keyshortcuts="5"><span>5</span></button>
+        <button type="button" class="card" data-card="8" aria-keyshortcuts="6"><span>8</span></button>
+        <button type="button" class="card" data-card="13" aria-keyshortcuts="7"><span>13</span></button>
+        <button type="button" class="card" data-card="21" aria-keyshortcuts="8"><span>21</span></button>
+        <button type="button" class="card" data-card="?" aria-keyshortcuts="9" aria-label="No sé"><span>?</span></button>
+        <button type="button" class="card" data-card="☕" aria-keyshortcuts="0" aria-label="Necesito un descanso"><span>☕</span></button>
       </div>
       <p id="vote-progress" class="hint"></p>
+      <p class="hint">Teclado: 1 a 9 y 0 eligen la carta según su posición; las flechas mueven el foco.</p>
     </section>
 
     <section id="screen-results" class="screen" aria-labelledby="results-title" hidden>
