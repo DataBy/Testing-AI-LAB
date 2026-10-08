@@ -74,3 +74,13 @@ button:focus-visible { outline: 2px solid #ff9f1c; outline-offset: 2px; }
   button { font-size: 17px; }
   .sci, .mem { font-size: 14px; }
 }
+
+.poker-link {
+  display: block;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #8a8fa3;
+}
+
+.poker-link:hover { color: #fff; }
