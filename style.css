@@ -11,7 +11,8 @@ body {
 }
 
 .calculator {
-  width: 320px;
+  width: 400px;
+  max-width: 100%;
   padding: 16px;
   background: #2b2d38;
   border-radius: 16px;
@@ -19,25 +20,33 @@ body {
 }
 
 .display {
-  min-height: 90px;
+  min-height: 110px;
   padding: 12px;
   text-align: right;
   color: #fff;
   word-break: break-all;
 }
 
-.history { height: 22px; color: #8a8fa3; font-size: 14px; }
+.status {
+  display: flex;
+  gap: 8px;
+  height: 16px;
+  font-size: 12px;
+  color: #ff9f1c;
+}
+
+.history { min-height: 22px; color: #8a8fa3; font-size: 14px; }
 .current { font-size: 36px; }
 
 .keys {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
 }
 
 button {
-  padding: 18px 0;
-  font-size: 20px;
+  padding: 14px 0;
+  font-size: 18px;
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -47,6 +56,21 @@ button {
 
 button:hover { filter: brightness(1.2); }
 button:active { transform: scale(0.96); }
+button:focus-visible { outline: 2px solid #ff9f1c; outline-offset: 2px; }
+
+.sci, .mem { font-size: 15px; padding: 12px 0; }
+.sci { background: #2f3a4f; }
+.mem { background: #262833; color: #b8bdd1; }
 .fn { background: #5b5f77; }
 .op { background: #ff9f1c; }
 .zero { grid-column: span 2; }
+.equals { grid-column: span 2; }
+
+@media (max-width: 420px) {
+  body { align-items: stretch; }
+  .calculator { border-radius: 0; padding: 10px; }
+  .keys { gap: 6px; }
+  .current { font-size: 30px; }
+  button { font-size: 17px; }
+  .sci, .mem { font-size: 14px; }
+}

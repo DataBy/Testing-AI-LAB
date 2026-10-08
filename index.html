@@ -3,41 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Calculadora</title>
+  <title>Calculadora científica</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="calculator">
     <div class="display">
+      <div class="status">
+        <span id="angle-mode">DEG</span>
+        <span id="memory-flag" hidden>M</span>
+      </div>
       <div id="history" class="history"></div>
-      <div id="current" class="current">0</div>
+      <div id="current" class="current" aria-live="polite">0</div>
     </div>
     <div class="keys">
+      <button data-action="angle" class="mem" aria-label="Alternar grados y radianes">DEG</button>
+      <button data-action="mc" class="mem" aria-label="Borrar memoria">MC</button>
+      <button data-action="mr" class="mem" aria-label="Recuperar memoria">MR</button>
+      <button data-action="mplus" class="mem" aria-label="Sumar a memoria">M+</button>
       <button data-action="clear" class="fn">AC</button>
-      <button data-action="delete" class="fn">⌫</button>
-      <button data-action="percent" class="fn">%</button>
-      <button data-op="/" class="op">÷</button>
 
-      <button data-num="7">7</button>
-      <button data-num="8">8</button>
-      <button data-num="9">9</button>
-      <button data-op="*" class="op">×</button>
+      <button data-insert="sin(" class="sci">sin</button>
+      <button data-insert="cos(" class="sci">cos</button>
+      <button data-insert="tan(" class="sci">tan</button>
+      <button data-insert="(" class="sci">(</button>
+      <button data-insert=")" class="sci">)</button>
 
-      <button data-num="4">4</button>
-      <button data-num="5">5</button>
-      <button data-num="6">6</button>
-      <button data-op="-" class="op">−</button>
+      <button data-insert="asin(" class="sci">sin⁻¹</button>
+      <button data-insert="acos(" class="sci">cos⁻¹</button>
+      <button data-insert="atan(" class="sci">tan⁻¹</button>
+      <button data-insert="π" class="sci">π</button>
+      <button data-insert="e" class="sci">e</button>
 
-      <button data-num="1">1</button>
-      <button data-num="2">2</button>
-      <button data-num="3">3</button>
-      <button data-op="+" class="op">+</button>
+      <button data-insert="ln(" class="sci">ln</button>
+      <button data-insert="log(" class="sci">log</button>
+      <button data-insert="√(" class="sci" aria-label="Raíz cuadrada">√</button>
+      <button data-insert="^2" class="sci" aria-label="Al cuadrado">x²</button>
+      <button data-insert="^" class="sci" aria-label="Potencia">xʸ</button>
 
-      <button data-num="0" class="zero">0</button>
-      <button data-num=".">.</button>
-      <button data-action="equals" class="op">=</button>
+      <button data-insert="!" class="sci" aria-label="Factorial">x!</button>
+      <button data-insert="1/(" class="sci" aria-label="Inverso">1/x</button>
+      <button data-insert="abs(" class="sci" aria-label="Valor absoluto">|x|</button>
+      <button data-insert="E" class="sci" aria-label="Notación científica">EXP</button>
+      <button data-action="delete" class="fn" aria-label="Borrar último">⌫</button>
+
+      <button data-insert="7">7</button>
+      <button data-insert="8">8</button>
+      <button data-insert="9">9</button>
+      <button data-insert="%" class="fn">%</button>
+      <button data-insert="÷" class="op" aria-label="Dividir">÷</button>
+
+      <button data-insert="4">4</button>
+      <button data-insert="5">5</button>
+      <button data-insert="6">6</button>
+      <button data-action="ans" class="fn">Ans</button>
+      <button data-insert="×" class="op" aria-label="Multiplicar">×</button>
+
+      <button data-insert="1">1</button>
+      <button data-insert="2">2</button>
+      <button data-insert="3">3</button>
+      <button data-insert="+" class="op">+</button>
+      <button data-insert="−" class="op" aria-label="Restar">−</button>
+
+      <button data-insert="0" class="zero">0</button>
+      <button data-insert=".">.</button>
+      <button data-action="equals" class="op equals">=</button>
     </div>
   </main>
+  <script src="evaluator.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
