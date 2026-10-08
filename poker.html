@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planning Poker</title>
+  <link rel="stylesheet" href="poker.css">
+</head>
+<body>
+  <main class="table">
+    <header class="masthead">
+      <h1>Planning Poker</h1>
+      <a class="back" href="index.html">Calculadora</a>
+    </header>
+
+    <section id="screen-setup" class="screen" aria-labelledby="setup-title">
+      <h2 id="setup-title">¿Quién vota?</h2>
+      <form id="setup-form" class="setup">
+        <label for="player-name">Nombre</label>
+        <div class="add-row">
+          <input id="player-name" name="player-name" type="text" maxlength="24" autocomplete="off">
+          <button type="submit" class="secondary">Agregar</button>
+        </div>
+        <ul id="player-list" class="players" aria-label="Participantes"></ul>
+        <p id="setup-hint" class="hint">Agrega al menos dos participantes para empezar.</p>
+        <button id="start-btn" type="button" class="primary" disabled>Empezar ronda</button>
+      </form>
+    </section>
+
+    <section id="screen-handoff" class="screen" aria-labelledby="handoff-title" hidden>
+      <h2 id="handoff-title" aria-live="polite">Pasa el dispositivo a <span id="handoff-name"></span></h2>
+      <p class="hint">Que nadie más mire la pantalla.</p>
+      <button id="handoff-btn" type="button" class="primary">Soy yo, ver cartas</button>
+    </section>
+
+    <section id="screen-vote" class="screen" aria-labelledby="vote-title" hidden>
+      <h2 id="vote-title" aria-live="polite">Vota, <span id="voter-name"></span></h2>
+      <div id="deck" class="deck" role="group" aria-label="Cartas">
+        <button type="button" class="card" data-card="0"><span>0</span></button>
+        <button type="button" class="card" data-card="1"><span>1</span></button>
+        <button type="button" class="card" data-card="2"><span>2</span></button>
+        <button type="button" class="card" data-card="3"><span>3</span></button>
+        <button type="button" class="card" data-card="5"><span>5</span></button>
+        <button type="button" class="card" data-card="8"><span>8</span></button>
+        <button type="button" class="card" data-card="13"><span>13</span></button>
+        <button type="button" class="card" data-card="21"><span>21</span></button>
+        <button type="button" class="card" data-card="?" aria-label="No sé"><span>?</span></button>
+        <button type="button" class="card" data-card="☕" aria-label="Necesito un descanso"><span>☕</span></button>
+      </div>
+      <p id="vote-progress" class="hint"></p>
+    </section>
+
+    <section id="screen-results" class="screen" aria-labelledby="results-title" hidden>
+      <h2 id="results-title">Resultado</h2>
+      <p id="reveal-hint" class="hint">Todos votaron. Revelen las cartas juntos.</p>
+      <button id="reveal-btn" type="button" class="primary">Revelar cartas</button>
+
+      <div id="results-body" hidden>
+        <ul id="vote-list" class="votes" aria-label="Votos"></ul>
+        <dl id="stats" class="stats">
+          <div><dt>Promedio</dt><dd id="stat-average">–</dd></div>
+          <div><dt>Mediana</dt><dd id="stat-median">–</dd></div>
+          <div><dt>Moda</dt><dd id="stat-mode">–</dd></div>
+          <div><dt>Mínimo</dt><dd id="stat-min">–</dd></div>
+          <div><dt>Máximo</dt><dd id="stat-max">–</dd></div>
+        </dl>
+        <p id="verdict" class="verdict" aria-live="polite"></p>
+        <button id="new-round-btn" type="button" class="primary">Nueva ronda</button>
+        <button id="edit-players-btn" type="button" class="secondary">Cambiar participantes</button>
+      </div>
+    </section>
+  </main>
+  <script src="poker.js"></script>
+</body>
+</html>
