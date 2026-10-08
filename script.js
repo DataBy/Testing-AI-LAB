@@ -1,104 +1,121 @@
 const currentEl = document.getElementById('current');
 const historyEl = document.getElementById('history');
-const symbols = { '/': '÷', '*': '×', '-': '−', '+': '+' };
+const angleEl = document.getElementById('angle-mode');
+const angleBtn = document.querySelector('[data-action="angle"]');
+const memoryFlag = document.getElementById('memory-flag');
 
-let current = '0';
-let previous = null;
-let operator = null;
+// Tras "=" estos textos continúan sobre el resultado; cualquier otro empieza una expresión nueva.
+const CONTINUATIONS = ['+', '−', '×', '÷', '^', '^2', '!', '%'];
+const KEY_MAP = { '*': '×', '/': '÷', '-': '−', p: 'π' };
+const KEY_INSERTS = new Set(['+', '^', '(', ')', '!', '%', '.', 'e']);
+
+let expr = '';
+let historyText = '';
+let angle = 'deg';
+let memory = 0;
+let ans = 0;
 let justEvaluated = false;
-
-function compute(a, b, op) {
-  switch (op) {
-    case '+': return a + b;
-    case '-': return a - b;
-    case '*': return a * b;
-    case '/': return b === 0 ? NaN : a / b;
-  }
-}
+let hasError = false;
 
 function format(n) {
-  if (!Number.isFinite(n)) return 'Error';
-  return String(parseFloat(n.toPrecision(12)));
+  return String(parseFloat(n.toPrecision(12))).replace('e', 'E');
+}
+
+function asOperand(n) {
+  const s = format(n);
+  return s.startsWith('-') ? `(${s})` : s;
+}
+
+function evaluateExpr() {
+  const open = (expr.match(/\(/g) || []).length - (expr.match(/\)/g) || []).length;
+  const closed = expr + ')'.repeat(Math.max(open, 0));
+  return { closed, value: Evaluator.evaluate(closed, { angle }) };
 }
 
 function render() {
-  currentEl.textContent = current;
-  historyEl.textContent = operator ? `${previous} ${symbols[operator]}` : '';
-}
-
-function inputNumber(d) {
-  if (current === 'Error' || justEvaluated) {
-    current = '0';
-    justEvaluated = false;
-  }
-  if (d === '.') {
-    if (!current.includes('.')) current += '.';
-  } else {
-    current = current === '0' ? d : current + d;
-  }
-}
-
-function chooseOperator(op) {
-  if (current === 'Error') return;
-  if (operator && !justEvaluated) equals(true);
-  previous = current;
-  operator = op;
-  current = '0';
-  justEvaluated = false;
-  if (previous === 'Error') { operator = null; current = 'Error'; }
-}
-
-function equals(chain = false) {
-  if (!operator || current === 'Error') return;
-  const result = format(compute(parseFloat(previous), parseFloat(current), operator));
-  if (chain) {
-    previous = result;
-    current = result;
-  } else {
-    current = result;
-    operator = null;
-    previous = null;
-    justEvaluated = true;
-  }
+  currentEl.textContent = hasError ? 'Error' : expr || '0';
+  historyEl.textContent = historyText;
+  angleEl.textContent = angle.toUpperCase();
+  angleBtn.textContent = angle.toUpperCase();
+  memoryFlag.hidden = memory === 0;
 }
 
 function clearAll() {
-  current = '0';
-  previous = null;
-  operator = null;
+  expr = '';
+  historyText = '';
   justEvaluated = false;
+  hasError = false;
+}
+
+function insert(text) {
+  if (hasError) clearAll();
+  if (justEvaluated) {
+    const keep = CONTINUATIONS.includes(text);
+    historyText = '';
+    justEvaluated = false;
+    if (!keep) expr = '';
+  }
+  expr += text;
 }
 
 function deleteLast() {
-  if (current === 'Error' || justEvaluated) return clearAll();
-  current = current.length > 1 ? current.slice(0, -1) : '0';
+  if (hasError || justEvaluated) return clearAll();
+  expr = expr.replace(/(?:[a-z]+\(|√\()$|.$/, '');
 }
 
-function percent() {
-  if (current === 'Error') return;
-  current = format(parseFloat(current) / 100);
+function equals() {
+  if (hasError || justEvaluated || !expr) return;
+  try {
+    const { closed, value } = evaluateExpr();
+    historyText = `${closed} =`;
+    ans = value;
+    expr = format(value);
+    justEvaluated = true;
+  } catch {
+    historyText = expr;
+    hasError = true;
+  }
 }
+
+function memoryAdd() {
+  if (hasError || !expr) return;
+  try {
+    memory += evaluateExpr().value;
+  } catch {
+    hasError = true;
+  }
+}
+
+const actions = {
+  clear: clearAll,
+  delete: deleteLast,
+  equals,
+  angle: () => { angle = angle === 'deg' ? 'rad' : 'deg'; },
+  ans: () => insert(asOperand(ans)),
+  mc: () => { memory = 0; },
+  mr: () => insert(asOperand(memory)),
+  mplus: memoryAdd,
+};
 
 document.querySelector('.keys').addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
-  const { num, op, action } = btn.dataset;
-  if (num !== undefined) inputNumber(num);
-  else if (op) chooseOperator(op);
-  else if (action === 'equals') equals();
-  else if (action === 'clear') clearAll();
-  else if (action === 'delete') deleteLast();
-  else if (action === 'percent') percent();
+  const { insert: text, action } = btn.dataset;
+  if (text !== undefined) insert(text);
+  else actions[action]?.();
   render();
 });
 
 document.addEventListener('keydown', (e) => {
-  if (/^[0-9.]$/.test(e.key)) inputNumber(e.key);
-  else if ('+-*/'.includes(e.key)) chooseOperator(e.key);
-  else if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); equals(); }
-  else if (e.key === 'Backspace') deleteLast();
-  else if (e.key === 'Escape') clearAll();
-  else if (e.key === '%') percent();
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key;
+  if (/^[0-9]$/.test(k) || KEY_INSERTS.has(k) || k in KEY_MAP) insert(KEY_MAP[k] || k);
+  else if (k === 'Enter' || k === '=') { e.preventDefault(); equals(); }
+  else if (k === 'Backspace') deleteLast();
+  else if (k === 'Escape') clearAll();
   else return;
+  if (k === '/') e.preventDefault();
   render();
 });
+
+render();
